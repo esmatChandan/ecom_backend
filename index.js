@@ -36,6 +36,7 @@ app.use(helmet());
 
 // CORS middleware
 app.use(cors({
+  origin:'http://localhost:5173',
   origin: 'https://ecom-backend-d27a.onrender.com/',
  origin: 'https://desitasty.com', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
