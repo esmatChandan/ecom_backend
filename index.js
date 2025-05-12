@@ -38,7 +38,7 @@ app.use(express.json());
 // Security middleware
 app.use(helmet());
 app.use(cors({
-  origin: 'https://desitasty.com',
+  origin: 'https://ecom-backend-d27a.onrender.com/',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
