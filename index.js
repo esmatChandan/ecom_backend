@@ -39,6 +39,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(cors({
   origin: 'https://ecom-backend-d27a.onrender.com/',
+  origin: 'https://desitasty.com',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
