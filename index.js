@@ -33,11 +33,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Security middleware
 app.use(helmet());
+// origin: 'https://ecom-backend-d27a.onrender.com/',
+//  origin: 'https://desitasty.com', 
 
 // CORS middleware
 app.use(cors({
-origin: 'https://ecom-backend-d27a.onrender.com/',
- origin: 'https://desitasty.com', 
+  origin:'*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

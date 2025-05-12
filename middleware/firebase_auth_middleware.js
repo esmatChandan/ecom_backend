@@ -104,7 +104,7 @@ async function verifyFirebaseToken(req, res, next) {
 
     res.status(401).json({
       error: errorMessages[error.code] || 'Authentication failed',
-      ...(process.env.NODE_ENV === 'development' && {
+      ...(process.env.NODE_ENV === 'production' && {
         details: error.message
       })
     });
