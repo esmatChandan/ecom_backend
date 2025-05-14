@@ -52,6 +52,7 @@ origin: function (origin, callback) {
     callback(new Error('Not allowed by CORS'));
   }
 },
+// origin: '*', // Allow all origins for development
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
