@@ -42,13 +42,25 @@ export default {
 // });
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
-  port: process.env.DB_PORT || 3306,
   dialect: 'mysql',
+  port: process.env.DB_PORT || 3306,
   dialectOptions: {
-    connectTimeout: 60000 // Increase timeout
+    connectTimeout: 60000, // 60 seconds timeout
   },
   retry: {
-    max: 5 // Retry up to 5 times
+    max: 5, // Maximum retry attempts
+    match: [
+      /ETIMEDOUT/,
+      /ECONNRESET/,
+      /ECONNREFUSED/,
+      /SequelizeConnectionError/
+    ],
+  },
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
   }
 });
 // Test database connection
