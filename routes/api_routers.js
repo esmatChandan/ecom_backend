@@ -218,35 +218,35 @@ router.post(
       );
 
       // Parse the address string into an object
-      let orderAddress;
-      try {
-        orderAddress = JSON.parse(order.address);
-        console.log("✅ Parsed address:", orderAddress);
-      } catch (error) {
-        console.error("❌ Error parsing address:", error);
-        orderAddress = [];
-      }
+      // let orderAddress;
+      // try {
+      //   orderAddress = JSON.parse(order.address);
+      //   console.log("✅ Parsed address:", orderAddress);
+      // } catch (error) {
+      //   console.error("❌ Error parsing address:", error);
+      //   orderAddress = [];
+      // }
 
-      const email = Array.isArray(orderAddress) && orderAddress.length > 0 
-        ? orderAddress[0].email 
-        : null;
+      // const email = Array.isArray(orderAddress) && orderAddress.length > 0 
+      //   ? orderAddress[0].email 
+      //   : null;
 
-      console.log("✅ Email found in order address:", email);
+      // console.log("✅ Email found in order address:", email);
 
-      if (email) {
-        // Send thank you email
-        await sendThankYouEmail(email, {
-          id: order.id,
-          amount: order.amount,
-          currency: order.currency,
-          status: "paid",
-          paid_at: new Date(),
-          // Include address details if needed
-          address: orderAddress[0],
-        }).catch((e) => console.error("Email sending failed:", e));
-      } else {
-        console.log("No email found in order address");
-      }
+      // if (email) {
+      //   // Send thank you email
+      //   await sendThankYouEmail(email, {
+      //     id: order.id,
+      //     amount: order.amount,
+      //     currency: order.currency,
+      //     status: "paid",
+      //     paid_at: new Date(),
+      //     // Include address details if needed
+      //     address: orderAddress[0],
+      //   }).catch((e) => console.error("Email sending failed:", e));
+      // } else {
+      //   console.log("No email found in order address");
+      // }
 // ... existing code ...
       await transaction.commit();
       console.log("✅ Transaction committed for payment");
