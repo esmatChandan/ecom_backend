@@ -35,21 +35,40 @@ export default {
 
 
 // Initialize Sequelize
+// const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
+//   host: process.env.DB_HOST,
+//   dialect: 'mysql', // Change to 'postgres', 'sqlite', etc., if needed
+//   logging: process.env.NODE_ENV === 'production' ? console.log : false,
+// });
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
-  dialect: 'mysql', // Change to 'postgres', 'sqlite', etc., if needed
-  logging: process.env.NODE_ENV === 'production' ? console.log : false,
-});
-
-// Test database connection
-(async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('✅ Database connected successfully');
-  } catch (error) {
-    console.error('❌ Unable to connect to the database:', error);
+  port: process.env.DB_PORT || 3306,
+  dialect: 'mysql',
+  dialectOptions: {
+    connectTimeout: 60000 // Increase timeout
+  },
+  retry: {
+    max: 5 // Retry up to 5 times
   }
-})();
+});
+// Test database connection
+// (async () => {
+//   try {
+//     await sequelize.authenticate();
+//     console.log('✅ Database connected successfully');
+//   } catch (error) {
+//     console.error('❌ Unable to connect to the database:', error);
+//   }
+// })();
+try {
+  await sequelize.authenticate();
+  console.log('Database connection established');
+  await sequelize.sync();
+  console.log('Database synchronized');
+} catch (error) {
+  console.error('Database connection failed:', error);
+  process.exit(1); // Exit if DB connection fails
+}
 
 //Define Order model
 const Order = sequelize.define('Order', {

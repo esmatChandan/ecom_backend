@@ -24,6 +24,13 @@ dotenv.config();
 // Create Express app
 const app = express();
 
+const allowedOrigins = [
+  'https://desitasty.com',
+  'https://staging.desitasty.com', // Add staging
+  'https://ecom-backend-d27a.onrender.com',
+  'http://localhost:3000'
+];
+
 // ------------------ Middleware ------------------ //
 
 // Body parsing middleware (must come first)
@@ -37,8 +44,15 @@ app.use(helmet());
 
 // CORS middleware
 app.use(cors({
-origin: 'https://ecom-backend-d27a.onrender.com/',
-origin: 'https://desitasty.com', 
+origin: function (origin, callback) {
+  if (!origin) return callback(null, true);
+  if (allowedOrigins.includes(origin)) {
+    callback(null, true);
+  } else {
+    console.log('Blocked CORS request from:', origin); // Log malicious attempts
+    callback(new Error('Not allowed by CORS'));
+  }
+},
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
