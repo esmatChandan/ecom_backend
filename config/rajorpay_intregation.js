@@ -11,7 +11,7 @@ const razorpay = new Razorpay({
 // Create order
 async function createOrder(amount, receipt, user_id) {
   const options = {
-    amount: amount * 100, // Razorpay expects amount in paise
+    amount: amount, // Razorpay expects amount in paise
     currency: "INR",
     receipt: receipt,
     notes: {

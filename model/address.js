@@ -2,6 +2,7 @@ import db from '../config/db.js'
 
 export const submitAddress = async (req, res) => {
   console.log("📩 submitAddress called");
+
   const {
     uid,
     firstName = null,
@@ -16,7 +17,6 @@ export const submitAddress = async (req, res) => {
     email = null,
   } = req.body;
 
-  console.log("Incoming request body:", req.body);
 
   if (!uid || !firstName || !pincode) {
     return res.status(400).json({
@@ -26,10 +26,8 @@ export const submitAddress = async (req, res) => {
   }
 
   try {
-    const userResult = await db.query('SELECT id FROM users WHERE uid = ?', [uid]);
-    const userRows = userResult[0] || userResult.rows || userResult;
-
-    if (!userRows || (Array.isArray(userRows) && userRows.length === 0)) {
+    const [userRows] = await db.query('SELECT id FROM users WHERE uid = ?', [uid]);
+    if (!userRows || userRows.length === 0) {
       return res.status(404).json({
         error: "User not found",
         details: "Please register this UID first"
@@ -51,14 +49,15 @@ export const submitAddress = async (req, res) => {
     };
     
 
-    const addressResult = await db.query('SELECT id FROM addresses WHERE uid = ?', [uid]);
-    const existingAddress = addressResult[0] || addressResult.rows || addressResult;
+    const addressRows = await db.query('SELECT id FROM addresses WHERE uid = ?', [uid]);
 
     const columns = Object.keys(addressData);
     const values = Object.values(addressData);
-
-    if (existingAddress && (Array.isArray(existingAddress) ? existingAddress.length > 0 : existingAddress.id)) {
-      const updateSQL = `UPDATE addresses SET ${columns.map(col => `${col} = ?`).join(', ')} WHERE uid = ?`;
+    
+    if (addressRows && addressRows.length > 0) {
+      
+      // Update existing address
+      const updateSQL = `UPDATE addresses SET ${columns.map(col => `${col}=?`).join(', ')} WHERE uid = ?`;
       await db.query(updateSQL, [...values, uid]);
 
       return res.json({
@@ -67,15 +66,15 @@ export const submitAddress = async (req, res) => {
         action: "update"
       });
     } else {
+      // Insert new address
       const insertSQL = `INSERT INTO addresses (${columns.join(', ')}) VALUES (${columns.map(() => '?').join(', ')})`;
-      const result = await db.query(insertSQL, values);
-      const insertId = result.insertId || result[0]?.insertId;
+      const insertResult = await db.query(insertSQL, values);
 
       return res.status(201).json({
         success: true,
         message: "Address created successfully",
         action: "create",
-        addressId: insertId
+        addressId: insertResult.insertId
       });
     }
 

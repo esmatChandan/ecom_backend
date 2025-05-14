@@ -41,10 +41,12 @@ router.post(
     body("items")
       .isArray({ min: 1 })
       .withMessage("Items must be an array with at least one item"),
-    body("address.*.email")
-    .isEmail()
-    .withMessage("Must provide a valid email in address"),
+    body('address.*.email')
+  .isEmail()
+  .withMessage('Must provide a valid email in address'),
   ],
+  
+  
   async (req, res) => {
     console.log("Incoming request body:", req.body);
     const transaction = await sequelize.transaction();
@@ -203,6 +205,7 @@ router.post(
       }
 
       // Update order
+      // ... existing code ...
       await updateOrderPayment(
         order.id,
         {
@@ -213,9 +216,23 @@ router.post(
         },
         transaction
       );
-      //console.log("✅ Order updated as paid");
-      const email = order.address?.[0]?.email; // Safely access first address's email
+
+      // Parse the address string into an object
+      let orderAddress;
+      try {
+        orderAddress = JSON.parse(order.address);
+        console.log("✅ Parsed address:", orderAddress);
+      } catch (error) {
+        console.error("❌ Error parsing address:", error);
+        orderAddress = [];
+      }
+
+      const email = Array.isArray(orderAddress) && orderAddress.length > 0 
+        ? orderAddress[0].email 
+        : null;
+
       console.log("✅ Email found in order address:", email);
+
       if (email) {
         // Send thank you email
         await sendThankYouEmail(email, {
@@ -225,13 +242,12 @@ router.post(
           status: "paid",
           paid_at: new Date(),
           // Include address details if needed
-          address: order.address[0],
+          address: orderAddress[0],
         }).catch((e) => console.error("Email sending failed:", e));
       } else {
         console.log("No email found in order address");
       }
-      console.log("✅ Order updated in DB");
-      // Commit transaction
+// ... existing code ...
       await transaction.commit();
       console.log("✅ Transaction committed for payment");
       // Here you might want to trigger fulfillment logic (email, etc.)

@@ -1,18 +1,26 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Configure your email service (example using Gmail)
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    pass: process.env.EMAIL_PASS  // Changed from EMAIL_PASSWORD to EMAIL_PASS to match sendEmail.js
   },
+});
+
+// Add debug logging
+console.log('Email configuration:', {
+  user: process.env.EMAIL_USER,
+  pass: process.env.EMAIL_PASS ? 'Password is set' : 'Password is missing'
 });
 
 export async function sendThankYouEmail(userEmail, orderDetails) {
   try {
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'your-shop@example.com',
+      from: `"Desi Tasty Cookies" <${process.env.EMAIL_USER}>`,
       to: userEmail,
       subject: 'Thank you for your order!',
       html: generateThankYouEmail(orderDetails),

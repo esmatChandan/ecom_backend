@@ -33,16 +33,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Security middleware
 app.use(helmet());
-// origin: 'https://ecom-backend-d27a.onrender.com/',
-//  origin: 'https://desitasty.com', 
+
 
 // CORS middleware
 app.use(cors({
-  origin:'*',
+origin: 'https://ecom-backend-d27a.onrender.com/',
+origin: 'https://desitasty.com', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
-
+//app.use(cors())
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
