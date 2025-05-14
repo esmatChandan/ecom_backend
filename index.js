@@ -66,19 +66,19 @@ app.use(limiter);
 
 // ------------------ Health Check ------------------ //
 
-app.get('/health', async (req, res) => {
+app.get('/db-health', async (req, res) => {
   try {
-    const rows = await db.query('SELECT NOW() AS time');
-    res.json({
+    await sequelize.authenticate();
+    const [results] = await sequelize.query('SELECT 1+1 AS result');
+    res.json({ 
       status: 'healthy',
-      serverTime: rows[0].time,
-      database: 'connected'
+      dbResult: results[0].result 
     });
-  } catch (err) {
+  } catch (error) {
     res.status(500).json({
       status: 'unhealthy',
-      error: 'Database connection failed',
-      details: err.message
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });

@@ -40,12 +40,16 @@ export default {
 //   dialect: 'mysql', // Change to 'postgres', 'sqlite', etc., if needed
 //   logging: process.env.NODE_ENV === 'production' ? console.log : false,
 // });
-const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-  host: process.env.DB_HOST,
+const sequelize = new Sequelize({
   dialect: 'mysql',
+  host: process.env.DB_HOST,
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   port: process.env.DB_PORT || 3306,
   dialectOptions: {
-    connectTimeout: 60000, // 60 seconds timeout
+    connectTimeout: 30000, // 30 seconds
+    socketTimeout: 60000, // 60 seconds
   },
   retry: {
     max: 5, // Maximum retry attempts
@@ -53,8 +57,11 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
       /ETIMEDOUT/,
       /ECONNRESET/,
       /ECONNREFUSED/,
-      /SequelizeConnectionError/
+      /SequelizeConnectionError/,
+      /ENETUNREACH/
     ],
+    backoffBase: 1000, // Start with 1s delay
+    backoffExponent: 1.5, // Exponential backoff
   },
   pool: {
     max: 5,
