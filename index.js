@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import rateLimit from 'express-rate-limit';
+import {sequelize} from './config/db.js';
 import db from './config/db.js';
 
 // Route imports
@@ -27,7 +28,6 @@ const app = express();
 const allowedOrigins = [
   'https://desitasty.com',
   'https://staging.desitasty.com', // Add staging
-  'http://localhost:3000'
 ];
 
 // ------------------ Middleware ------------------ //
@@ -140,6 +140,9 @@ app.use((err, req, res, next) => {
 });
 
 // ------------------ Server ------------------ //
+sequelize.authenticate()
+  .then(() => console.log('✅ DB connected'))
+  .catch(err => console.error('❌ DB connect error:', err));
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {

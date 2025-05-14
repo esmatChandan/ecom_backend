@@ -3,16 +3,25 @@ import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const pool = mysql.createPool({
+const dbConfig = {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  port: parseInt(process.env.DB_PORT) || 3306,
+  timezone: '+00:00',
+  ssl: process.env.NODE_ENV === 'production' ? {
+    rejectUnauthorized: false
+  } : undefined
+};
+
+// MySQL2 Connection Pool
+const pool = mysql.createPool({
+  ...dbConfig,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  timezone: '+00:00',
-  namedPlaceholders: true,
+  namedPlaceholders: true
 });
 
 export async function query(sql, params = []) {
@@ -34,22 +43,14 @@ export default {
 };
 
 
-// Initialize Sequelize
-// const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-//   host: process.env.DB_HOST,
-//   dialect: 'mysql', // Change to 'postgres', 'sqlite', etc., if needed
-//   logging: process.env.NODE_ENV === 'production' ? console.log : false,
-// });
 const sequelize = new Sequelize({
   dialect: 'mysql',
-  host: process.env.DB_HOST,
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: parseInt(process.env.DB_PORT) || 3306,
+  ...dbConfig,
+  username: dbConfig.user,
   dialectOptions: {
     connectTimeout: 30000,
-    timezone: 'Z' // Optional, use UTC timezone
+    timezone: 'Z',
+    ssl: dbConfig.ssl
   },
   retry: {
     max: 5,
@@ -69,27 +70,10 @@ const sequelize = new Sequelize({
     acquire: 30000,
     idle: 10000
   },
-  logging: false // disable SQL logs in prod
+  logging: process.env.NODE_ENV === 'development' ? console.log : false
 });
 
-// Test database connection
-// (async () => {
-//   try {
-//     await sequelize.authenticate();
-//     console.log('✅ Database connected successfully');
-//   } catch (error) {
-//     console.error('❌ Unable to connect to the database:', error);
-//   }
-// })();
-try {
-  await sequelize.authenticate();
-  console.log('Database connection established');
-  await sequelize.sync();
-  console.log('Database synchronized');
-} catch (error) {
-  console.error('Database connection failed:', error);
-  process.exit(1); // Exit if DB connection fails
-}
+
 
 //Define Order model
 const Order = sequelize.define('Order', {
@@ -153,14 +137,21 @@ const Order = sequelize.define('Order', {
 });
 
 // Sync models with the database
-(async () => {
+export async function initializeDatabase() {
   try {
-    await sequelize.sync({ alter: true }); // Use `force: true` to drop and recreate tables
-    console.log('✅ Database synchronized successfully');
+    await sequelize.authenticate();
+    const testConn = await pool.getConnection();
+    testConn.release();
+    console.log('✅ Database connections established');
+    
+    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+    console.log('✅ Database synchronized');
+    return true;
   } catch (error) {
-    console.error('❌ Error synchronizing database:', error);
+    console.error('❌ Database connection failed:', error);
+    process.exit(1);
   }
-})();
+}
 
 // Create Order Record
 export async function createOrderRecord(orderData, transaction) {
