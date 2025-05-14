@@ -46,13 +46,13 @@ const sequelize = new Sequelize({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: process.env.DB_PORT || 3306,
+  port: parseInt(process.env.DB_PORT) || 3306,
   dialectOptions: {
-    connectTimeout: 30000, // 30 seconds
-    socketTimeout: 60000, // 60 seconds
+    connectTimeout: 30000,
+    timezone: 'Z' // Optional, use UTC timezone
   },
   retry: {
-    max: 5, // Maximum retry attempts
+    max: 5,
     match: [
       /ETIMEDOUT/,
       /ECONNRESET/,
@@ -60,16 +60,18 @@ const sequelize = new Sequelize({
       /SequelizeConnectionError/,
       /ENETUNREACH/
     ],
-    backoffBase: 1000, // Start with 1s delay
-    backoffExponent: 1.5, // Exponential backoff
+    backoffBase: 1000,
+    backoffExponent: 1.5,
   },
   pool: {
     max: 5,
     min: 0,
     acquire: 30000,
     idle: 10000
-  }
+  },
+  logging: false // disable SQL logs in prod
 });
+
 // Test database connection
 // (async () => {
 //   try {
