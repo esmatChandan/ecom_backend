@@ -27,7 +27,6 @@ const app = express();
 const allowedOrigins = [
   'https://desitasty.com',
   'https://staging.desitasty.com', // Add staging
-  'https://ecom-backend-d27a.onrender.com',
   'http://localhost:3000'
 ];
 
