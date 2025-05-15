@@ -4,12 +4,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const dbConfig = {
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST ||'217.21.84.205',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: parseInt(process.env.DB_PORT) || 3306,
   timezone: '+00:00',
+  connectTimeout: 10000, 
+  connectionLimit: 5,  
   ssl: process.env.NODE_ENV === 'production' ? {
     rejectUnauthorized: false
   } : undefined
@@ -52,23 +54,25 @@ const sequelize = new Sequelize({
     timezone: 'Z',
     ssl: dbConfig.ssl
   },
+  pool: {
+    max: 3,
+    min: 0,
+    acquire: 30000,
+    evict: 1000,
+    idle: 40000
+  },
   retry: {
     max: 5,
     match: [
-      /ETIMEDOUT/,
+       /ETIMEDOUT/,
       /ECONNRESET/,
       /ECONNREFUSED/,
       /SequelizeConnectionError/,
-      /ENETUNREACH/
+      /ENETUNREACH/,
+      /EHOSTUNREACH/
     ],
     backoffBase: 1000,
     backoffExponent: 1.5,
-  },
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false
 });
