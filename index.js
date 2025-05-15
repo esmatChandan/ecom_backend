@@ -21,10 +21,10 @@ dotenv.config();
 // Create Express app
 const app = express();
 
-const allowedOrigins = [
-  'https://desitasty.com',
-  'https://staging.desitasty.com',
-];
+// const allowedOrigins = [
+//   'https://desitasty.com',
+//   'https://staging.desitasty.com',
+// ];
 
 // ------------------ Middleware ------------------ //
 
@@ -37,17 +37,18 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('Blocked CORS request from:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       console.log('Blocked CORS request from:', origin);
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+ origin: '*', // Allow all origins for development
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
