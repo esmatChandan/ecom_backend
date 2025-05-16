@@ -37,18 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware
 app.use(cors({
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl requests)
-//     if (!origin) return callback(null, true);
-    
-//     if (allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       console.log('Blocked CORS request from:', origin);
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
- origin: '*', // Allow all origins for development
+
+ origin: 'https://desitasty.com', 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -93,7 +83,7 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api', apiRoutes);
 
 // ------------------ Health Checks ------------------ //
-app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+//app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
 
 app.get('/db-health', async (req, res) => {
   try {
