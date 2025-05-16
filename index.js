@@ -20,11 +20,8 @@ dotenv.config();
 
 // Create Express app
 const app = express();
+const allowedOrigins = ['https://desitasty.com', 'https://staging.desitasty.com'];
 
-// const allowedOrigins = [
-//   'https://desitasty.com',
-//   'https://staging.desitasty.com',
-// ];
 
 // ------------------ Middleware ------------------ //
 
@@ -37,11 +34,19 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS middleware
 app.use(cors({
-
- origin: 'https://desitasty.com', 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
+app.set('trust proxy', true);
 
 // Rate limiting - different limits for different routes
 const apiLimiter = rateLimit({
