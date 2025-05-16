@@ -13,8 +13,8 @@ const dbConfig = {
   connectTimeout: 10000, 
   connectionLimit: 5,  
   ssl: process.env.NODE_ENV === 'production' ? {
-    rejectUnauthorized: false
-  } : undefined
+  rejectUnauthorized: false // Less secure but works
+} : undefined
 };
 
 // MySQL2 Connection Pool
@@ -144,15 +144,31 @@ const Order = sequelize.define('Order', {
 export async function initializeDatabase() {
   try {
     await sequelize.authenticate();
-    const testConn = await pool.getConnection();
-    testConn.release();
-    console.log('✅ Database connections established');
+    console.log('Sequelize connection established');
     
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+    const testConn = await pool.getConnection();
+    console.log('Raw MySQL connection established');
+    testConn.release();
+    
+    await sequelize.sync({ 
+      alter: process.env.NODE_ENV === 'development',
+      logging: console.log // Show sync queries
+    });
     console.log('✅ Database synchronized');
-    return true;
   } catch (error) {
-    console.error('❌ Database connection failed:', error);
+    console.error('❌ Database connection failed:');
+    console.error('- Error name:', error.name);
+    console.error('- Error message:', error.message);
+    console.error('- Error code:', error.original?.code);
+    console.error('- Error details:', error.original?.sqlMessage);
+    
+    // Additional debugging for SSL issues
+    if (error.original?.code === 'HANDSHAKE_SSL_ERROR') {
+      console.error('SSL handshake failed. Verify your SSL configuration:');
+      console.error('1. Check if your CA certificate is correct');
+      console.error('2. Try with rejectUnauthorized: false temporarily');
+    }
+    
     process.exit(1);
   }
 }
