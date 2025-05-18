@@ -14,6 +14,7 @@ import orderRoutes from './routes/getOrderrouters.js';
 import adminDashbord from './routes/adminDashbord.js';
 import adminloginRoute from './routes/adminLoginRoute.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
+import webhookRoutes from './routes/webhookRouter.js';
 
 // Initialize environment variables
 dotenv.config();
@@ -27,6 +28,7 @@ const allowedOrigins = ['https://desitasty.com', 'https://staging.desitasty.com'
 
 // Security middleware
 app.use(helmet());
+app.use('/api/webhook', webhookRoutes);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10kb' }));
@@ -41,6 +43,7 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
+  //origin:'*', // Use environment variable for CORS origin
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -62,7 +65,6 @@ const authLimiter = rateLimit({
 });
 
 // ------------------ Routes ------------------ //
-
 // Apply rate limiting to appropriate routes
 app.use('/api/auth', authLimiter);
 app.use('/api', apiLimiter);

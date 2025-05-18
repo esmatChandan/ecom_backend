@@ -1,8 +1,9 @@
 import express from 'express';
 import { getOrCreateUserByPhone, viewUserinAdminPanal } from '../model/userController.js';
+import verifyFirebaseToken  from '../middleware/firebase_auth_middleware.js';
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', verifyFirebaseToken, async (req, res) => {
   const { uid, phone } = req.body;
 
   try {
