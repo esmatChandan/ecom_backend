@@ -52,7 +52,9 @@ const sequelize = new Sequelize({
   dialectOptions: {
     connectTimeout: 30000,
     timezone: 'Z',
-    ssl: dbConfig.ssl
+    ssl: {
+      rejectUnauthorized: false
+    }
   },
   pool: {
     max: 3,
