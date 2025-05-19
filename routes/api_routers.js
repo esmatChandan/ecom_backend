@@ -96,7 +96,7 @@ router.post(
         receipt: receipt,
         items: items,
         address: address,
-        status: "pending",
+        status: "created",
       };
 
       await createOrderRecord(orderData, transaction);
