@@ -11,7 +11,7 @@ const dbConfig = {
   port: parseInt(process.env.DB_PORT) || 3306,
   timezone: '+00:00',
   connectTimeout: 10000, 
-  connectionLimit: 5,  
+  connectionLimit: 10,  
   ssl: process.env.NODE_ENV === 'production' ? {
   rejectUnauthorized: false // Less secure but works
 } : undefined
@@ -47,26 +47,29 @@ export default {
 
 const sequelize = new Sequelize({
   dialect: 'mysql',
-  ...dbConfig,
   username: dbConfig.user,
+  password: dbConfig.password,
+  host: dbConfig.host,
+  database: dbConfig.database,
+  port: dbConfig.port || 3306,
   dialectOptions: {
     connectTimeout: 30000,
     timezone: 'Z',
-    ssl: {
+    ssl: process.env.NODE_ENV === 'production' ? {
       rejectUnauthorized: false
-    }
+    } : undefined
   },
   pool: {
-    max: 3,
+    max: 10,
     min: 0,
     acquire: 30000,
     evict: 1000,
-    idle: 40000
+    idle: 10000
   },
   retry: {
     max: 5,
     match: [
-       /ETIMEDOUT/,
+      /ETIMEDOUT/,
       /ECONNRESET/,
       /ECONNREFUSED/,
       /SequelizeConnectionError/,
@@ -74,10 +77,11 @@ const sequelize = new Sequelize({
       /EHOSTUNREACH/
     ],
     backoffBase: 1000,
-    backoffExponent: 1.5,
+    backoffExponent: 1.5
   },
   logging: process.env.NODE_ENV === 'development' ? console.log : false
 });
+
 
 
 
