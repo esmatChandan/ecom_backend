@@ -151,13 +151,22 @@ const startServer = async () => {
   try {
     await sequelize.authenticate();
     console.log('✅ Database connected');
-    
+
+    // ⏱️ Keep DB Awake
+    setInterval(async () => {
+      try {
+        await sequelize.query('SELECT 1');
+        console.log('🟢 DB keep-alive ping sent');
+      } catch (err) {
+        console.error('🔴 DB keep-alive failed:', err.message);
+      }
+    }, 2 * 60 * 1000); // every 5 minutes
+
     const PORT = process.env.PORT || 5000;
     const server = app.listen(PORT, () => {
       console.log(`🚀 Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
     });
 
-    // Handle shutdown gracefully
     process.on('SIGTERM', () => {
       console.log('SIGTERM received. Shutting down gracefully...');
       server.close(() => {
@@ -170,6 +179,7 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
 
 startServer();
 
