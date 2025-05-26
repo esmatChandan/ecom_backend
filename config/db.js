@@ -9,7 +9,7 @@ const dbConfig = {
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: parseInt(process.env.DB_PORT) || 3306,
-  family: 4,  // Force IPv4 connection
+  //family: 4,  // Force IPv4 connection
   timezone: '+00:00',
   connectTimeout: 10000, 
   connectionLimit: 10,  
@@ -53,7 +53,7 @@ const sequelize = new Sequelize({
   host: dbConfig.host,
   database: dbConfig.database,
   port: dbConfig.port || 3306,
-  family: 4,
+  //family: 4,
   dialectOptions: {
     connectTimeout: 30000,
     timezone: 'Z',
