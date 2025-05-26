@@ -160,7 +160,7 @@ const startServer = async () => {
       } catch (err) {
         console.error('🔴 DB keep-alive failed:', err.message);
       }
-    }, 2 * 60 * 1000); // every 5 minutes
+    }, 5 * 60 * 1000); // every 5 minutes
 
     const PORT = process.env.PORT || 5000;
     const server = app.listen(PORT, () => {
