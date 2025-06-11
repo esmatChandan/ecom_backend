@@ -13,9 +13,9 @@ const dbConfig = {
   timezone: '+00:00',
   connectTimeout: 10000, 
   connectionLimit: 10,  
-  ssl: process.env.NODE_ENV === 'production' ? {
-  rejectUnauthorized: false // Less secure but works
-} : undefined
+//   ssl: process.env.NODE_ENV === 'production' ? {
+//   rejectUnauthorized: false // Less secure but works
+// } : undefined
 };
 
 // MySQL2 Connection Pool
@@ -57,10 +57,10 @@ const sequelize = new Sequelize({
   dialectOptions: {
     connectTimeout: 30000,
     timezone: 'Z',
-    ssl: process.env.NODE_ENV === 'production' ? {
-      rejectUnauthorized: false
-    } : undefined
-  },
+  //   ssl: process.env.NODE_ENV === 'production' ? {
+  //     rejectUnauthorized: false
+  //   } : undefined
+  // },
   pool: {
     max: 10,
     min: 0,
