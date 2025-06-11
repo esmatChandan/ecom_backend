@@ -60,7 +60,7 @@ const sequelize = new Sequelize({
   //   ssl: process.env.NODE_ENV === 'production' ? {
   //     rejectUnauthorized: false
   //   } : undefined
-  // },
+   },
   pool: {
     max: 10,
     min: 0,
