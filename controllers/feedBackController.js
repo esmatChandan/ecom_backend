@@ -2,7 +2,7 @@ import db from '../config/db.js';
 import { sendThankYouEmail } from '../utils/sendEmail.js';
 
 export const submitFeedback = async (req, res) => {
-  const { full_name, email, phone, message,rating } = req.body;
+  const { full_name, email, phone, message, productName,rating } = req.body;
   console.log(full_name , email)
 
 
@@ -12,9 +12,10 @@ export const submitFeedback = async (req, res) => {
 
   try {
     await db.query(
-      'INSERT INTO feedback (full_name, email, phone, message, rating) VALUES (?, ?, ?, ?, ?)',
-      [full_name, email, phone, message, rating]
-    );
+  'INSERT INTO feedback (full_name, email, phone, message, productName, rating) VALUES (?, ?, ?, ?, ?, ?)',
+  [full_name, email, phone, message, productName, rating]
+);
+
 
     await sendThankYouEmail(email, full_name);
   
